@@ -45,6 +45,7 @@ function PlayerDataService:UpdateAttributes(player)
 	player:SetAttribute("PetCollection", table.concat(data.Companions and data.Companions.Owned or {}, ", "))
 	player:SetAttribute("EquippedPets", table.concat(data.Companions and data.Companions.Equipped or {}, ","))
 	player:SetAttribute("MageArchetype", data.MageArchetype or "Pyromancer")
+    player:SetAttribute("UnlockedMages", table.concat(data.UnlockedMages or { "Pyromancer" }, ","))
 end
 
 function PlayerDataService:Start()

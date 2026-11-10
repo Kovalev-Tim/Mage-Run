@@ -87,25 +87,37 @@ end
 
 function PetService:HandleAction(player, action, petId)
 	local data = dataService:Get(player)
-	if not data or not CompanionConfig[petId] or (action ~= "Equip" and action ~= "Unequip") then return end
-	local ownedCount, equippedCount = 0, 0
-	for _, id in data.Companions.Owned do if id == petId then ownedCount += 1 end end
-	for _, id in data.Companions.Equipped do if id == petId then equippedCount += 1 end end
-	if action == "Equip" then
-		if ownedCount <= equippedCount then return end
-		local capacity = 3 + ((data.Upgrades.Enchantments and data.Upgrades.Enchantments.PetCapacity) or 0)
-		if #data.Companions.Equipped >= capacity then
-			remotes.Message:FireClient(player, "Pet capacity is " .. capacity .. " • upgrade Bond in Enchantments")
-			return
+	if not data or typeof(action) ~= "string" then return end
+	local capacity = 3 + ((data.Upgrades.Enchantments and data.Upgrades.Enchantments.PetCapacity) or 0)
+	if action == "UnequipAll" then
+		data.Companions.Equipped = {}
+	elseif action == "EquipBest" then
+		local function score(id) local c = CompanionConfig[id]; return c and ((c.DamageBonus or 0) + (c.CupsBonus or 0)) or -1 end
+		local pool = table.clone(data.Companions.Owned)
+		table.sort(pool, function(a, b) return score(a) > score(b) end)
+		data.Companions.Equipped = {}
+		for _, id in pool do
+			if #data.Companions.Equipped >= capacity then break end
+			if CompanionConfig[id] then table.insert(data.Companions.Equipped, id) end
 		end
-		table.insert(data.Companions.Equipped, petId)
-	else
-		for index = #data.Companions.Equipped, 1, -1 do
-			if data.Companions.Equipped[index] == petId then
-				table.remove(data.Companions.Equipped, index)
-				break
+	elseif (action == "Equip" or action == "Unequip") and CompanionConfig[petId] then
+		local ownedCount, equippedCount = 0, 0
+		for _, id in data.Companions.Owned do if id == petId then ownedCount += 1 end end
+		for _, id in data.Companions.Equipped do if id == petId then equippedCount += 1 end end
+		if action == "Equip" then
+			if ownedCount <= equippedCount then return end
+			if #data.Companions.Equipped >= capacity then
+				remotes.Message:FireClient(player, "Pet capacity is " .. capacity .. " • upgrade Bond in Enchantments")
+				return
+			end
+			table.insert(data.Companions.Equipped, petId)
+		else
+			for index = #data.Companions.Equipped, 1, -1 do
+				if data.Companions.Equipped[index] == petId then table.remove(data.Companions.Equipped, index); break end
 			end
 		end
+	else
+		return
 	end
 	dataService:UpdateAttributes(player)
 	self:RefreshPlayer(player)

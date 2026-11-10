@@ -34,8 +34,8 @@ function MapBuilder:Start()
 	meditationUpgradePrompt = nil
 	local hub = Instance.new("Folder")
 	hub.Name, hub.Parent = "Hub", root
-	part(hub, "SharedHubFloor", Vector3.new(190, 4, 760), CFrame.new(0, -2, -270), Color3.fromRGB(78, 109, 93), Enum.Material.Grass)
-	part(hub, "StartingPlatform", Vector3.new(180, 1, 70), CFrame.new(0, 0.5, 50), Color3.fromRGB(119, 111, 103), Enum.Material.Cobblestone)
+	part(hub, "SharedHubFloor", Vector3.new(190, 4, 760), CFrame.new(0, -2, -270), Color3.fromRGB(78, 109, 93), Enum.Material.Plastic)
+	part(hub, "StartingPlatform", Vector3.new(180, 1, 70), CFrame.new(0, 0.5, 50), Color3.fromRGB(119, 111, 103), Enum.Material.Plastic)
 	part(hub, "CorridorLeftWall", Vector3.new(2, 14, 600), CFrame.new(-43, 7, -285), Color3.fromRGB(48, 58, 67), Enum.Material.Slate)
 	part(hub, "CorridorRightWall", Vector3.new(2, 14, 600), CFrame.new(43, 7, -285), Color3.fromRGB(48, 58, 67), Enum.Material.Slate)
 	local zonesFolder = Instance.new("Folder")
@@ -50,7 +50,7 @@ function MapBuilder:Start()
 	for _, zone in ZoneConfig do
 		local center = (zone.Start + zone.Finish) / 2
 		local length = zone.Start - zone.Finish
-		part(zonesFolder, "ZoneFloor_" .. zone.Id, Vector3.new(84, 1, length), CFrame.new(0, 0.5, center), zone.Color, zone.Material)
+		part(zonesFolder, "ZoneFloor_" .. zone.Id, Vector3.new(84, 1, length), CFrame.new(0, 0.5, center), zone.Color, Enum.Material.Plastic)
 		local marker = part(zonesFolder, "ZoneMarker_" .. zone.Id, Vector3.new(84, 0.18, 1), CFrame.new(0, 1.1, zone.Start), zone.Color, Enum.Material.Neon)
 		marker.CanCollide = false
 		local trigger = part(zonesFolder, "ZoneTrigger_" .. zone.Id, Vector3.new(80, 16, 3), CFrame.new(0, 8, zone.Start), zone.Color)
@@ -124,14 +124,14 @@ function MapBuilder:Start()
 		text.TextScaled, text.TextWrapped, text.Font, text.Parent = true, true, Enum.Font.GothamBold, sign
 	end
 	local archetypeOrder = { "Pyromancer", "Rootweaver", "Starseer", "Frostcaller", "Stormkeeper", "Tidecaller", "Sunweaver", "Umbramancer", "Voidcaller" }
-	part(stands, "MageGallery", Vector3.new(39, 1, 48), CFrame.new(68.5, 0.5, 43), Color3.fromRGB(54, 58, 73), Enum.Material.Slate)
+	part(stands, "MageGallery", Vector3.new(35, 1, 44), CFrame.new(68.5, 0.5, 43), Color3.fromRGB(54, 58, 73), Enum.Material.Plastic)
 	local mageDisplays = Instance.new("Folder")
 	mageDisplays.Name, mageDisplays.Parent = "MageDisplays", stands
 	for index, archetypeId in archetypeOrder do
 		local archetype = MageConfig[archetypeId]
 		local column, row = (index - 1) % 3, math.floor((index - 1) / 3)
-		local x, mageZ = 53 + column * 12, 25 + row * 12
-		local pedestal = part(stands, "MageStand_" .. archetypeId, Vector3.new(9, 1.5, 9), CFrame.new(x, 1.75, mageZ), archetype.Color, Enum.Material.Slate)
+		local x, mageZ = 56 + column * 8, 26 + row * 11
+		local pedestal = part(stands, "MageStand_" .. archetypeId, Vector3.new(8, 1, 8), CFrame.new(x, 1.5, mageZ), archetype.Color, Enum.Material.Plastic)
 		local figure = Instance.new("Model")
 		figure.Name = "MageDisplay_" .. archetypeId
 		figure:SetAttribute("MageId", archetypeId)
@@ -159,21 +159,21 @@ function MapBuilder:Start()
 			if piece:IsA("BasePart") then piece.CanCollide = false end
 		end
 		figure.Parent = mageDisplays
-		local costText = (archetype.CupCost or 0) == 0 and "FREE" or string.format("%d VALOR", archetype.CupCost)
-		local buttonPosition = Vector3.new(x - 4.4, 2.6, mageZ)
-		local button = part(stands, "MageButton_" .. archetypeId, Vector3.new(8, 1.4, 0.55), CFrame.lookAt(buttonPosition, buttonPosition + Vector3.new(-1, 0, 0)), Color3.fromRGB(33, 39, 52), Enum.Material.Slate)
-		button.CanCollide = false
-		local surface = Instance.new("SurfaceGui")
-		surface.Face, surface.SizingMode, surface.Parent = Enum.NormalId.Front, Enum.SurfaceGuiSizingMode.PixelsPerStud, button
-		local buttonText = Instance.new("TextLabel")
-		buttonText.Size, buttonText.BackgroundTransparency = UDim2.fromScale(1, 1), 1
-		buttonText.Text = string.format("%s  •  %s", string.upper(archetype.DisplayName), costText)
-		buttonText.TextColor3, buttonText.TextScaled, buttonText.Font = archetype.Color, true, Enum.Font.GothamBlack
-		buttonText.Parent = surface
-		local click = Instance.new("ClickDetector")
-		click.MaxActivationDistance, click.Parent = 18, button
-		click:SetAttribute("ArchetypeId", archetypeId)
-		table.insert(archetypeButtons, click)
+		local costText = (archetype.CupCost or 0) == 0 and "FREE" or string.format("%d", archetype.CupCost)
+		local pad = part(stands, "MagePad_" .. archetypeId, Vector3.new(6, 0.3, 3), CFrame.new(x, 1.15, mageZ + 5.5), Color3.fromRGB(255, 60, 60), Enum.Material.Neon)
+		pad.CanCollide, pad.CanTouch = false, true
+		pad:SetAttribute("ArchetypeId", archetypeId)
+		pad:SetAttribute("MagePad", true)
+		local tag = Instance.new("BillboardGui")
+		tag.Name, tag.Size, tag.StudsOffset, tag.MaxDistance, tag.Parent = "PadTag", UDim2.fromOffset(150, 46), Vector3.new(0, 3.2, 0), 70, pad
+		local padName = Instance.new("TextLabel")
+		padName.Name, padName.Size, padName.BackgroundTransparency, padName.Text = "Name", UDim2.fromScale(1, 0.5), 1, string.upper(archetype.DisplayName)
+		padName.TextColor3, padName.TextStrokeTransparency, padName.TextScaled, padName.Font, padName.Parent = archetype.Color, 0, true, Enum.Font.GothamBlack, tag
+		local padState = Instance.new("TextLabel")
+		padState.Name, padState.Size, padState.Position, padState.BackgroundTransparency = "State", UDim2.fromScale(1, 0.5), UDim2.fromScale(0, 0.5), 1
+		padState.Text, padState.TextColor3, padState.TextStrokeTransparency = costText, Color3.fromRGB(255, 214, 79), 0
+		padState.TextScaled, padState.Font, padState.Parent = true, Enum.Font.GothamBlack, tag
+		table.insert(archetypeButtons, pad)
 	end
 	local eggDisplays = Instance.new("Folder")
 	eggDisplays.Name, eggDisplays.Parent = "EggDisplays", stands
@@ -181,7 +181,7 @@ function MapBuilder:Start()
 	for index, eggId in eggOrder do
 		local eggConfig = EggConfig[eggId]
 		local x, eggZ = -76 + (index - 1) * 17, 67
-		local eggStand = part(stands, "EggStand_" .. eggId, Vector3.new(10, 1.5, 8), CFrame.new(x, 1.75, eggZ), Color3.fromRGB(119, 95, 75), Enum.Material.WoodPlanks)
+		local eggStand = part(stands, "EggStand_" .. eggId, Vector3.new(9, 1, 7), CFrame.new(x, 1.5, eggZ), Color3.fromRGB(119, 95, 75), Enum.Material.Plastic)
 		local eggModel = part(eggDisplays, eggId, Vector3.new(4.2, 5.2, 4.2), CFrame.new(x, 5.6, eggZ), eggConfig.Color, Enum.Material.Neon)
 		eggModel.Shape = Enum.PartType.Ball
 		eggModel.CanCollide = false
@@ -278,7 +278,7 @@ function MapBuilder:ConfigureCharacter(player, character, highestZone)
 	-- players must clear each zone again before its next barrier opens.
 	self:SetGateProgress(player, 1)
 end
-function MapBuilder:GetArchetypeButtons() return archetypeButtons end
+function MapBuilder:GetMagePads() return archetypeButtons end
 function MapBuilder:HasArchetypeStand(archetypeId)
 	return root.Hub.HubStands:FindFirstChild("MageStand_" .. archetypeId) ~= nil
 end
