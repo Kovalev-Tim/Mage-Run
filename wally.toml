@@ -1,0 +1,6 @@
+[package]
+name = "rift-run/baseline"
+description = "RIFT RUN baseline gameplay scaffold"
+version = "0.1.0"
+
+[dependencies]

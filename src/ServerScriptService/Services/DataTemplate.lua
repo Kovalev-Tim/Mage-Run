@@ -1,0 +1,15 @@
+return {
+    SchemaVersion = 4,
+    Level = 1,
+    XP = 0,
+    Valor = 0,
+    MagicPower = 0,
+    HighestZoneUnlocked = 1,
+    MageArchetype = "Pyromancer",
+    Upgrades = { SkillMastery = 0, Enchantments = { Damage = 0, Luck = 0, PetCapacity = 0 } },
+    UnlockedMages = { "Pyromancer" },
+    Companions = { Owned = { "Sproutling" }, Equipped = { "Sproutling" } },
+    ClearedZones = {},
+    FirstClear = {},
+    Settings = { Music = 1, Effects = 1 },
+}
